@@ -6,109 +6,108 @@
 /*   By: sengle <sengle@student.42.us.org>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/14 18:25:48 by sengle            #+#    #+#             */
-/*   Updated: 2019/07/14 19:23:27 by sengle           ###   ########.fr       */
+/*   Updated: 2019/07/14 20:50:40 by sengle           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 /*
- * each level's total rows = TOTAL_ROWS_LEVEL_1 + level - 1
- * each
+ * PYRAMID_ROWS(size) macro returns the number of rows for pyramid size
+ * DOOR_WIDTH(size) macro returns the width of the door for pyramid size
  */
-#define	TOTAL_ROWS_LEVEL_1	3
-#define	COLS_ROW_1			3
-#define	COLS_ROW_3			7
-#define	DOOR_ROW_SIZE_1		3
-#define	DOOR_WIDTH_SIZE_1	1
-#define	BOTTOM_ROW			1
+#define PYRAMID_ROWS(size)	((2 * size) + ((size * (size + 1)) / 2))
+#define	DOOR_WIDTH(size)	(size - ((size % 2) ? 0 : 1))
+
+void		ft_putchar(char c);
 
 /*
-7, 9, 9, 11, 11, 13
-
-COLS_ROW_1 + 4 + (1 / 2) * 2 = 7
-
-   +4
-*1*
-3
-5
-7
-_  +6
-*2 / 2 = 1 * 2 = 2
-13
-15
-17
-19
-_  +6
-*3* / 2 = 1 * 2 = 2
-25
-27
-31
-33
-35
-_  +8
-*4*	/ 2 = 2 * 2 = 4
-43
-45
-47
-49
-51
-53
-_
-*5*	/ 2 = 2 * 2 = 4
-
-61 +8
-63
-65
-67
-69
-71
-73
-_
-*6* / 2 = 3 * 2 = 6
-83 +10
-85
-87
-89
-91
-93
-95
-97
-_
-*7* / 2 = 3
-107  +10
-
-(size / 4)
-
-1   2   3   4   5   6
-7, 19, 35, 53, 73, 97, ...
-
-*/
-
-void	ft_putchar(char c);
-
-int		width_row(int size, int type)
+ * output n copies of character c to standard output using ft_putchar(c)
+ */
+static void	putnchars(int n, char c)
 {
-	if (type == BOTTOM_ROW)
+	while (n-- > 0)
+		ft_putchar(c);
+}
+
+/*
+ *	draw_row - displays one row of Sastantua's pyramid
+ *
+ *			   Local Variables:
+ *
+ *			   size:	pyramid size
+ *			   row:		output row, 0 is first one
+ *			   spaces:	number of spaces to display before the '/' character
+ *			   stars:	number of stars to display
+ *
+ *			   Algorithm:
+ *
+ *			   1. output spaces ' ' before the first '/'
+ */
+static void	draw_row(int size, int row, int spaces, int stars)
+{
+	putnchars(spaces, ' ');
+	ft_putchar('/');
+	if (row >= PYRAMID_ROWS(size) - DOOR_WIDTH(size))
 	{
-		return (4 + (size / 2) * 2);
+		putnchars(stars - (DOOR_WIDTH(size) - 1) / 2, '*');
+		if (size >= 5 && row == PYRAMID_ROWS(size) - DOOR_WIDTH(size) / 2 - 1)
+		{
+			putnchars(DOOR_WIDTH(size) - 2, '|');
+			ft_putchar('$');
+			ft_putchar('|');
+		}
+		else
+			putnchars(DOOR_WIDTH(size), '|');
+		putnchars(stars - (DOOR_WIDTH(size) - 1) / 2, '*');
 	}
-	return (0);
+	else
+		putnchars(stars * 2 + 1, '*');
+	ft_putchar('\\');
+	ft_putchar('\n');
 }
 
-void	display_level(int level, int size)
+/*
+ *	sastantua - displays Sastantua's pyramid of size levels
+ *
+ *				Local Variables:
+ *
+ *				level:		 pyramid level where one is the highest
+ *				line:		 counts lines within a pyramid level
+ *				row:		 pyramid row, row 0 is the first row, stars[] index
+ *				stars_count: counts stars within HALF a row of the pyramid
+ *				stars[]:	 array of integers containing number of stars per row
+ *
+ *				Algorithm:
+ *
+ *				1. while the pyramid level is less than or equal to its size:
+ *					A. for each line in the level, calculate the stars_count for that row
+ *				2. while the row stars[] index is less than the pyramid's rows:
+ *					A. draw the row using draw_row(int size, int row, int spaces, int stars)
+ */
+void		sastantua(int size)
 {
-	level = 0;
-	size = 0;
-	level = size;
-	size = level;
-}
+	int		level;
+	int		line;
+	int		row;
+	int		stars_count;
+	int		stars[PYRAMID_ROWS(size)];
 
-void	sastantua(int size)
-{
-	int	level;
-
-	if (size <= 0)
-		return ;
 	level = 1;
-	while (level <= size)
-		display_level(level++, size);
+	row = 0;
+	stars_count = 0;
+	while (level++ <= size)
+	{
+		line = 1;
+		while (line++ < (level + 2))
+		{
+			stars[row++] = stars_count;
+			stars_count++;
+		}
+		if (level % 2)
+			stars_count += ((level - 1) / 2) + 1;
+		else
+			stars_count += (level / 2) + 1;
+	}
+	row = -1;
+	while (++row < PYRAMID_ROWS(size))
+		draw_row(size, row, stars[PYRAMID_ROWS(size) - 1] - stars[row], stars[row]);
 }
