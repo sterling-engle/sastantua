@@ -6,7 +6,7 @@
 /*   By: sengle <sengle@student.42.us.org>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/07/14 18:25:48 by sengle            #+#    #+#             */
-/*   Updated: 2019/07/14 20:50:40 by sengle           ###   ########.fr       */
+/*   Updated: 2019/07/14 21:06:25 by sengle           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,6 +41,16 @@ static void	putnchars(int n, char c)
  *			   Algorithm:
  *
  *			   1. output spaces ' ' before the first '/'
+ *			   2. output the '/'
+ *			   3. if row >= a row that contains the door:
+ *					A. output the '*' before the door
+ *					B. if size >= 5 and row equals the middle of the door rows:
+ *						a. output '|' door characters leaving one for '$' handle
+ *						b. output '$' door handle followed by '|' door edge
+ *					C. else output '|' door characters for the entire DOOR_WIDTH(size)
+ *					D. output the rest of the '*' after the door
+ *				4. else output stars * 2 + 1 '*' characters across the pyramid row
+ *				5. output '\' and a newline.
  */
 static void	draw_row(int size, int row, int spaces, int stars)
 {
